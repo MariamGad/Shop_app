@@ -10,6 +10,15 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _priceFocusNode = FocusNode();
+  final _descriptionFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _priceFocusNode.dispose();
+    _descriptionFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +48,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 focusNode: _priceFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Price',
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                },
+              ),
+              TextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: 3,
+                focusNode: _descriptionFocusNode,
+                decoration: InputDecoration(
+                  labelText: 'Description',
                   labelStyle: TextStyle(
                     color: Theme.of(context).primaryColor,
                   ),
