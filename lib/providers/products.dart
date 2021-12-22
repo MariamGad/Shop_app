@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'product.dart';
 
 class Products with ChangeNotifier {
@@ -59,6 +61,16 @@ class Products with ChangeNotifier {
   // }
 
   void addProduct(Product product) {
+
+    final url= Uri.parse('https://shop-app-c69f0-default-rtdb.firebaseio.com/products.json');
+    http.post(url,body: json.encode({
+      'title':product.title,
+      'description': product.description,
+      'price': product.price,
+      'imageUrl': product.imageUrl,
+      'isFavourite':product.isFavourite,
+
+    }));
     final newProduct = Product(
       title: product.title,
       description: product.description,
