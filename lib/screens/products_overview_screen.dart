@@ -23,6 +23,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     // final productsContainer=Provider.of<Products>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text('MyShop'),
         actions: [
           PopupMenuButton(
