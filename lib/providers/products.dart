@@ -67,6 +67,10 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      // if (extractedData == null) {
+      //   return;
+      // }
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -131,7 +135,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> removeProduct(String id) async{
+  Future<void> removeProduct(String id) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[prodIndex];
     if (prodIndex >= 0) {
@@ -140,11 +144,11 @@ class Products with ChangeNotifier {
       final url = Uri.parse(
           'https://shop-app-c69f0-default-rtdb.firebaseio.com/products/$id.json');
       final response = await http.delete(url);
-        if (response.statusCode >= 400) {
-          _items.insert(prodIndex, existingProduct);
-          notifyListeners();
-          throw HttpException('Could not delete product.');
-        }
+      if (response.statusCode >= 400) {
+        _items.insert(prodIndex, existingProduct);
+        notifyListeners();
+        throw HttpException('Could not delete product.');
+      }
     }
   }
 
