@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-  Products(this.authToken,this.userId, this._items);
+  Products(this.authToken, this.userId, this._items);
   final String authToken;
   final String userId;
   List<Product> _items = [
@@ -64,18 +64,20 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser=false]) async {
+    final filterString=filterByUser?'orderBy="creatorId"&equalTo="$userId"':'';
     var url = Uri.parse(
-        'https://shop-app-c69f0-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+        'https://shop-app-c69f0-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
       }
-      url=Uri.parse('https://shop-app-c69f0-default-rtdb.firebaseio.com/userFavourites/$userId.json?auth=$authToken');
-      final favouriteResponse=await http.get(url);
-      final favouriteDate=json.decode(favouriteResponse.body);
+      url = Uri.parse(
+          'https://shop-app-c69f0-default-rtdb.firebaseio.com/userFavourites/$userId.json?auth=$authToken');
+      final favouriteResponse = await http.get(url);
+      final favouriteDate = json.decode(favouriteResponse.body);
       // print(favouriteDate);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
@@ -85,7 +87,8 @@ class Products with ChangeNotifier {
           description: prodData['description'],
           imageUrl: prodData['imageUrl'],
           price: prodData['price'],
-          isFavourite: favouriteDate==null? false :favouriteDate[prodId] ??false,
+          isFavourite:
+              favouriteDate == null ? false : favouriteDate[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -106,6 +109,7 @@ class Products with ChangeNotifier {
             'price': product.price,
             'imageUrl': product.imageUrl,
             // 'isFavourite': product.isFavourite,
+            'creatorId': userId,
           }));
       // print(json.decode(response.body));
       final newProduct = Product(

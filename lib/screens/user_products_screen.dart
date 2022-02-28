@@ -9,12 +9,13 @@ class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
 
   Future<void> _refreshProduct(BuildContext context) async {
-    Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    await Provider.of<Products>(context, listen: false).fetchAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productData = Provider.of<Products>(context);
+    // final productData = Provider.of<Products>(context);
+    print('rebuild');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -28,25 +29,35 @@ class UserProductsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProduct(context),
-        color: Theme.of(context).primaryColor,
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: ListView.builder(
-            itemBuilder: (ctx, i) => Column(
-              children: [
-                UserProductItem(
-                  id: productData.items[i].id,
-                  title: productData.items[i].title,
-                  imageUrl: productData.items[i].imageUrl,
-                ),
-                Divider(),
-              ],
-            ),
-            itemCount: productData.items.length,
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProduct(context),
+        builder: (ctx, snapShot) =>
+            snapShot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _refreshProduct(context),
+                    color: Theme.of(context).primaryColor,
+                    child: Consumer<Products>(
+                      builder: (ctx, productData, _) => Padding(
+                        padding: EdgeInsets.all(8),
+                        child: ListView.builder(
+                          itemBuilder: (ctx, i) => Column(
+                            children: [
+                              UserProductItem(
+                                id: productData.items[i].id,
+                                title: productData.items[i].title,
+                                imageUrl: productData.items[i].imageUrl,
+                              ),
+                              Divider(),
+                            ],
+                          ),
+                          itemCount: productData.items.length,
+                        ),
+                      ),
+                    ),
+                  ),
       ),
       drawer: AppDrawer(),
     );
