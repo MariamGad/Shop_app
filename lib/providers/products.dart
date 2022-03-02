@@ -64,8 +64,9 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProducts([bool filterByUser=false]) async {
-    final filterString=filterByUser?'orderBy="creatorId"&equalTo="$userId"':'';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
         'https://shop-app-c69f0-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
     try {
